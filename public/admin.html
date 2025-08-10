@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แดชบอร์ดแอดมิน - ระบบโหวตประกวดปกสมุด</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card.winner {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .result-card.winner::before {
+            content: '👑';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .cover-image {
+            width: 120px;
+            height: 180px;
+            margin: 0 auto 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .cover-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cover-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .cover-theme {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .vote-count {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .vote-percentage {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .voters-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .voters-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .voters-table th,
+        .voters-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .voters-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .voters-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .last-updated {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .voters-table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>แดชบอร์ดแอดมิน</h1>
+            <p>ระบบโหวตประกวดปกสมุด - ผลลัพธ์แบบเรียลไทม์</p>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>เชื่อมต่อแบบเรียลไทม์</span>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-votes">0</div>
+                <div class="stat-label">จำนวนโหวตทั้งหมด</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="leading-cover">-</div>
+                <div class="stat-label">ปกที่นำ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="leading-votes">0</div>
+                <div class="stat-label">คะแนนสูงสุด</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="participation-rate">0%</div>
+                <div class="stat-label">อัตราการเข้าร่วม</div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="results-section">
+            <h2 class="section-title">ผลการโหวต</h2>
+            <button class="refresh-btn" onclick="refreshResults()">รีเฟรชข้อมูล</button>
+            <div class="results-grid" id="results-grid">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+
+        <!-- Voters List -->
+        <div class="voters-section">
+            <h2 class="section-title">รายชื่อผู้โหวต</h2>
+            <div style="overflow-x: auto;">
+                <table class="voters-table">
+                    <thead>
+                        <tr>
+                            <th>ลำดับ</th>
+                            <th>รหัสนักเรียน</th>
+                            <th>ชื่อ-นามสกุล</th>
+                            <th>ชั้น</th>
+                            <th>ห้อง</th>
+                            <th>ปกที่เลือก</th>
+                            <th>เวลา</th>
+                        </tr>
+                    </thead>
+                    <tbody id="voters-tbody">
+                        <!-- Voters will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="last-updated">
+                อัปเดตล่าสุด: <span id="last-updated-time">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Initialize Socket.IO
+        const socket = io();
+        
+        // Cover data
+        const coverData = {
+            cover1: { name: 'ปกสมุด A', theme: 'ธีมธรรมชาติ', color: '#4CAF50' },
+            cover2: { name: 'ปกสมุด B', theme: 'ธีมเทคโนโลยี', color: '#2196F3' },
+            cover3: { name: 'ปกสมุด C', theme: 'ธีมศิลปะ', color: '#FF9800' },
+            cover4: { name: 'ปกสมุด D', theme: 'ธีมกีฬา', color: '#E91E63' }
+        };
+
+        // Socket event listeners
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            refreshResults();
+        });
+
+        socket.on('initialData', (data) => {
+            updateDashboard(data);
+        });
+
+        socket.on('voteUpdate', (data) => {
+            updateDashboard(data);
+            showNotification(`โหวตใหม่: ${data.latestVote.studentName} โหวต${getCoverName(data.latestVote.bookCover)}`);
+        });
+
+        // Update dashboard with new data
+        function updateDashboard(data) {
+            updateStatistics(data);
+            updateResults(data.results);
+            updateVotersList(data.voters || []);
+            updateLastUpdated();
+        }
+
+        // Update statistics cards
+        function updateStatistics(data) {
+            document.getElementById('total-votes').textContent = data.totalVotes;
+            
+            const results = data.results;
+            let leadingCover = '-';
+            let leadingVotes = 0;
+            
+            if (Object.keys(results).length > 0) {
+                const sortedResults = Object.entries(results).sort((a, b) => b[1] - a[1]);
+                leadingCover = getCoverName(sortedResults[0][0]);
+                leadingVotes = sortedResults[0][1];
+            }
+            
+            document.getElementById('leading-cover').textContent = leadingCover;
+            document.getElementById('leading-votes').textContent = leadingVotes;
+            
+            // Calculate participation rate (assuming 1000 total students for demo)
+            const participationRate = Math.round((data.totalVotes / 1000) * 100);
+            document.getElementById('participation-rate').textContent = `${participationRate}%`;
+        }
+
+        // Update results grid
+        function updateResults(results) {
+            const resultsGrid = document.getElementById('results-grid');
+            const totalVotes = Object.values(results).reduce((sum, votes) => sum + votes, 0);
+            
+            // Sort results by vote count
+            const sortedResults = Object.entries(results).sort((a, b) => b[1] - a[1]);
+            const maxVotes = sortedResults.length > 0 ? sortedResults[0][1] : 0;
+            
+            resultsGrid.innerHTML = '';
+            
+            // Add all covers, even those with 0 votes
+            Object.keys(coverData).forEach(coverId => {
+                const votes = results[coverId] || 0;
+                const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
+                const isWinner = votes === maxVotes && votes > 0;
+                
+                const resultCard = document.createElement('div');
+                resultCard.className = `result-card ${isWinner ? 'winner' : ''}`;
+                
+                resultCard.innerHTML = `
+                    <div class="cover-image">
+                        <img src="https://via.placeholder.com/120x180/${coverData[coverId].color.substring(1)}/white?text=${encodeURIComponent(coverData[coverId].name)}" alt="${coverData[coverId].name}">
+                    </div>
+                    <div class="cover-title">${coverData[coverId].name}</div>
+                    <div class="cover-theme">${coverData[coverId].theme}</div>
+                    <div class="vote-count">${votes}</div>
+                    <div class="vote-percentage">${percentage}%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+                
+                resultsGrid.appendChild(resultCard);
+            });
+        }
+
+        // Update voters list
+        function updateVotersList(voters) {
+            const tbody = document.getElementById('voters-tbody');
+            tbody.innerHTML = '';
+            
+            voters.forEach((voter, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${voter.studentId}</td>
+                    <td>${voter.studentName}</td>
+                    <td>ม.${voter.grade}</td>
+                    <td>${voter.room}</td>
+                    <td>${getCoverName(voter.bookCover)}</td>
+                    <td>${formatDateTime(voter.timestamp)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Get cover name from ID
+        function getCoverName(coverId) {
+            return coverData[coverId] ? coverData[coverId].name : coverId;
+        }
+
+        // Format date and time
+        function formatDateTime(timestamp) {
+            return new Date(timestamp).toLocaleString('th-TH', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        // Update last updated time
+        function updateLastUpdated() {
+            document.getElementById('last-updated-time').textContent = new Date().toLocaleString('th-TH');
+        }
+
+        // Refresh results manually
+        async function refreshResults() {
+            try {
+                const response = await fetch('/api/results');
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                console.error('Error refreshing results:', error);
+                showNotification('เกิดข้อผิดพลาดในการรีเฟรชข้อมูล', 'error');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 1000;
+                font-family: 'Kanit', sans-serif;
+                font-weight: 500;
+                max-width: 300px;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            // Add animation styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshResults();
+        });
+    </script>
+</body>
+</html>

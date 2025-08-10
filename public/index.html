@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบโหวตประกวดปกสมุด</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/asset/logoไว้ซ้ายบน หรือตรงกลาง-cropped.svg" alt="Logo" class="logo">
+            <img src="/asset/หัวข้อtilte-cropped.svg" alt="Title" class="title-img">
+        </div>
+
+        <!-- Step 1: Student ID Input -->
+        <div id="step-1" class="step active">
+            <div class="step-header">
+                <h2>ขั้นตอนที่ 1: กรอกรหัสนักเรียน</h2>
+            </div>
+            <div class="form-group">
+                <label for="student-id">รหัสนักเรียน:</label>
+                <input type="text" id="student-id" placeholder="กรุณากรอกรหัสนักเรียน 5 หลัก" maxlength="5" required>
+                <div id="student-id-error" class="error-message"></div>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="checkStudentId()">ถัดไป</button>
+        </div>
+
+        <!-- Step 2: Personal Information -->
+        <div id="step-2" class="step">
+            <div class="step-header">
+                <h2>ขั้นตอนที่ 2: ยืนยันข้อมูลส่วนตัว</h2>
+            </div>
+            <div class="student-info">
+                <div class="info-card">
+                    <h3>ข้อมูลนักเรียน</h3>
+                    <div class="info-row">
+                        <span class="label">รหัสนักเรียน:</span>
+                        <span id="display-student-id" class="value"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">ชั้น:</span>
+                        <span id="display-grade" class="value"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">ห้อง:</span>
+                        <span id="display-room" class="value"></span>
+                    </div>
+                </div>
+                
+                <div class="name-input-section">
+                    <h3>กรอกชื่อ-นามสกุล</h3>
+                    <div class="form-group">
+                        <label for="student-name-input">ชื่อ-นามสกุล:</label>
+                        <input type="text" id="student-name-input" placeholder="กรอกชื่อ-นามสกุล" required>
+                        <div id="name-error" class="error-message"></div>
+                        <div class="name-note">หมายเหตุ: ไม่ต้องใส่คำนำหน้า</div>
+                    </div>
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary" onclick="goToStep(1)">กลับ</button>
+                <button type="button" class="btn btn-primary" onclick="goToStep(3)">ไปต่อ</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Vote Selection -->
+        <div id="step-3" class="step">
+            <div class="step-header">
+                <h2>ขั้นตอนที่ 3: เลือกปกสมุดที่ชื่นชอบ</h2>
+                <p class="step-instruction">กรุณาเลือกปกสมุดที่คุณชื่นชอบเพียง 1 ปก</p>
+            </div>
+            
+            <div class="voting-container">
+                <div class="voting-grid">
+                    <!-- Candidate 1 -->
+                    <div class="candidate-card" data-cover="1">
+                        <div class="candidate-number">1</div>
+                        <div class="candidate-image">
+                            <img src="/votepic/1.svg" alt="ปกสมุด 1">
+                            <div class="zoom-hint">ดับเบิ้ลคลิกเพื่อขยายภาพ</div>
+                        </div>
+                        <div class="candidate-info">
+                            <h3>ปกสมุดที่ 1</h3>
+                            <div class="select-btn">เลือกปกนี้</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Candidate 2 -->
+                    <div class="candidate-card" data-cover="2">
+                        <div class="candidate-number">2</div>
+                        <div class="candidate-image">
+                            <img src="/votepic/2.svg" alt="ปกสมุด 2">
+                            <div class="zoom-hint">ดับเบิ้ลคลิกเพื่อขยายภาพ</div>
+                        </div>
+                        <div class="candidate-info">
+                            <h3>ปกสมุดที่ 2</h3>
+                            <div class="select-btn">เลือกปกนี้</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Candidate 3 -->
+                    <div class="candidate-card" data-cover="3">
+                        <div class="candidate-number">3</div>
+                        <div class="candidate-image">
+                            <img src="/votepic/3.svg" alt="ปกสมุด 3">
+                            <div class="zoom-hint">ดับเบิ้ลคลิกเพื่อขยายภาพ</div>
+                        </div>
+                        <div class="candidate-info">
+                            <h3>ปกสมุดที่ 3</h3>
+                            <div class="select-btn">เลือกปกนี้</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Candidate 4 -->
+                    <div class="candidate-card" data-cover="4">
+                        <div class="candidate-number">4</div>
+                        <div class="candidate-image">
+                            <img src="/votepic/4.svg" alt="ปกสมุด 4">
+                            <div class="zoom-hint">ดับเบิ้ลคลิกเพื่อขยายภาพ</div>
+                        </div>
+                        <div class="candidate-info">
+                            <h3>ปกสมุดที่ 4</h3>
+                            <div class="select-btn">เลือกปกนี้</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Candidate 5 -->
+                    <div class="candidate-card" data-cover="5">
+                        <div class="candidate-number">5</div>
+                        <div class="candidate-image">
+                            <img src="/votepic/5.svg" alt="ปกสมุด 5">
+                            <div class="zoom-hint">ดับเบิ้ลคลิกเพื่อขยายภาพ</div>
+                        </div>
+                        <div class="candidate-info">
+                            <h3>ปกสมุดที่ 5</h3>
+                            <div class="select-btn">เลือกปกนี้</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Candidate 6 -->
+                    <div class="candidate-card" data-cover="6">
+                        <div class="candidate-number">6</div>
+                        <div class="candidate-image">
+                            <img src="/votepic/6.svg" alt="ปกสมุด 6">
+                            <div class="zoom-hint">ดับเบิ้ลคลิกเพื่อขยายภาพ</div>
+                        </div>
+                        <div class="candidate-info">
+                            <h3>ปกสมุดที่ 6</h3>
+                            <button type="button" class="select-btn">เลือกปกนี้</button>
+                        </div>
+                    </div>
+                </div>
+                    
+                    <!-- Selection Preview -->
+                    <div class="selected-preview">
+                        <div class="preview-header">
+                            <h3>ปกที่คุณเลือก</h3>
+                        </div>
+                        <div class="preview-content" id="preview-content">
+                            <p class="no-selection">ยังไม่ได้เลือกปกสมุด</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group mt-4">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(3)">ย้อนกลับ</button>
+                    <button type="button" class="btn btn-primary" id="vote-btn" onclick="submitVote()" disabled>ยืนยันการโหวต</button>
+                </div>
+                
+                <div id="vote-error" class="error-message text-center mt-3"></div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="success-step" class="step">
+            <div class="success-message">
+                <div class="success-icon">✓</div>
+                <h2>โหวตสำเร็จ!</h2>
+                <p>ขอบคุณสำหรับการโหวตของคุณ</p>
+                <div class="vote-summary">
+                    <h3>สรุปการโหวต</h3>
+                    <div id="vote-summary-content"></div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="resetForm()">กลับหน้าแรก </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>กำลังประมวลผล...</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
