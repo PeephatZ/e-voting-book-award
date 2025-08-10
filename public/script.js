@@ -522,8 +522,7 @@ async function submitVote() {
 function displayVoteSummary() {
     const summaryContent = document.getElementById('vote-summary-content');
     const selectedOption = document.querySelector(`[data-cover="${selectedCover}"]`);
-    const coverName = selectedOption.querySelector('h4').textContent;
-    const coverTheme = selectedOption.querySelector('p').textContent;
+    const coverName = selectedOption ? selectedOption.querySelector('h3').textContent : `ปกสมุดที่ ${selectedCover}`;
     const studentName = document.getElementById('student-name-input').value.trim();
     
     summaryContent.innerHTML = `
@@ -534,7 +533,7 @@ function displayVoteSummary() {
             <strong>ชั้น:</strong> ${studentData.grade}/${studentData.room}
         </div>
         <div class="summary-item">
-            <strong>ปกที่เลือก:</strong> ${coverName} (${coverTheme})
+            <strong>ปกที่เลือก:</strong> ${coverName}
         </div>
         <div class="summary-item">
             <strong>เวลา:</strong> ${new Date().toLocaleString('th-TH')}
@@ -576,10 +575,28 @@ function resetForm() {
     hideError('name-error');
     
     // Clear displayed student info
-    document.getElementById('display-student-name').textContent = '';
+    const displayStudentId = document.getElementById('display-student-id');
+    const displayGrade = document.getElementById('display-grade');
+    const displayRoom = document.getElementById('display-room');
+    
+    if (displayStudentId) displayStudentId.textContent = '';
+    if (displayGrade) displayGrade.textContent = '';
+    if (displayRoom) displayRoom.textContent = '';
+    
+    // Reset selection preview
+    resetSelectionPreview();
     
     // Go back to step 1
     goToStep(1);
+    
+    // Reset the selected cover
+    const selectedCard = document.querySelector('.candidate-card.selected');
+    if (selectedCard) {
+        selectedCard.classList.remove('selected');
+    }
+    
+    // Enable vote button
+    document.getElementById('vote-btn').disabled = true;
     
     // Focus on student ID input
     setTimeout(() => {
