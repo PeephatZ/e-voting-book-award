@@ -18,13 +18,29 @@ const io = socketIo(server, {
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
-app.use('/asset', express.static('asset'));
+// Configure static file serving with proper MIME types
+app.use(express.static('public', {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.svg')) {
+            res.set('Content-Type', 'image/svg+xml');
+        }
+    }
+}));
+
+app.use('/asset', express.static('asset', {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.svg')) {
+            res.set('Content-Type', 'image/svg+xml');
+        }
+    }
+}));
+
 app.use('/votepic', express.static('votepic', { 
     maxAge: '1d',
     setHeaders: (res, path) => {
         if (path.endsWith('.svg')) {
-            res.setHeader('Content-Type', 'image/svg+xml');
+            res.set('Content-Type', 'image/svg+xml');
+            res.set('Cache-Control', 'public, max-age=86400');
         }
     }
 }));

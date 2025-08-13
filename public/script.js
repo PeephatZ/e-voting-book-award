@@ -151,6 +151,33 @@ function initCoverSelection() {
     initImageFullscreen();
 }
 
+// Format candidate title from filename
+function formatCandidateTitle(filename) {
+    // Remove extension
+    const nameWithoutExt = filename.replace(/\.[^.]+$/, '');
+    
+    // Extract number and title
+    const match = nameWithoutExt.match(/หมายเลข(\d+)(.+)/);
+    if (match && match[1] && match[2]) {
+        const number = match[1];
+        let title = match[2];
+        
+        // Convert number to Thai numeral
+        const thaiNumerals = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
+        const thaiNumber = number.toString().split('').map(digit => thaiNumerals[parseInt(digit)]).join('');
+        
+        // Format title (remove leading special chars and replace underscores with spaces)
+        title = title.replace(/^[._]/, '')
+                    .replace(/_/g, ' ')
+                    .replace(/\./g, '')  // Remove dots
+                    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                    .trim();
+        
+        return `หมายเลข${thaiNumber} ${title}`;
+    }
+    return nameWithoutExt;
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize image fullscreen functionality
@@ -158,6 +185,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize cover selection
     initCoverSelection();
+    
+    // Update candidate titles based on image filenames
+    document.querySelectorAll('.candidate-card').forEach(card => {
+        const img = card.querySelector('img');
+        if (img) {
+            const filename = img.src.split('/').pop();
+            const title = formatCandidateTitle(filename);
+            const titleElement = card.querySelector('h3');
+            if (titleElement) {
+                titleElement.textContent = title;
+            }
+        }
+    });
     
     // Focus on student ID input
     studentIdInput.focus();
@@ -423,19 +463,19 @@ function selectCover(coverId) {
 // Update the selection preview
 function updateSelectionPreview(coverId) {
     const previewContent = document.getElementById('preview-content');
-    const selectedCard = document.querySelector(`.candidate-card[data-cover="${coverId}"]`);
+    const selectedOption = document.querySelector(`[data-cover="${coverId}"]`);
     
-    if (selectedCard) {
-        const imgSrc = selectedCard.querySelector('img').src;
-        const title = selectedCard.querySelector('h3').textContent;
+    if (selectedOption) {
+        const imgSrc = selectedOption.querySelector('img').src;
         
         previewContent.innerHTML = `
-            <div class="preview-selection">
-                <img src="${imgSrc}" alt="${title}">
-                <h4>${title}</h4>
-                <p>หมายเลข ${coverId}</p>
-                <div class="change-selection" onclick="document.querySelector('.candidate-card.selected')?.scrollIntoView({behavior: 'smooth', block: 'center'});">
-                    เปลี่ยนการเลือก
+            <div class="selected-cover">
+                <div class="selected-image">
+                    <img src="${imgSrc}" alt="Selected Cover">
+                </div>
+                <div class="selected-details">
+                    <h3>หมายเลข ${coverId}</h3>
+                    <button class="btn btn-secondary change-selection">เปลี่ยนการเลือก</button>
                 </div>
             </div>
         `;
@@ -521,8 +561,6 @@ async function submitVote() {
 // Display vote summary
 function displayVoteSummary() {
     const summaryContent = document.getElementById('vote-summary-content');
-    const selectedOption = document.querySelector(`[data-cover="${selectedCover}"]`);
-    const coverName = selectedOption ? selectedOption.querySelector('h3').textContent : `ปกสมุดที่ ${selectedCover}`;
     const studentName = document.getElementById('student-name-input').value.trim();
     
     summaryContent.innerHTML = `
@@ -533,7 +571,7 @@ function displayVoteSummary() {
             <strong>ชั้น:</strong> ${studentData.grade}/${studentData.room}
         </div>
         <div class="summary-item">
-            <strong>ปกที่เลือก:</strong> ${coverName}
+            <strong>ปกที่เลือก:</strong> หมายเลข ${selectedCover}
         </div>
         <div class="summary-item">
             <strong>เวลา:</strong> ${new Date().toLocaleString('th-TH')}
